@@ -1,0 +1,3 @@
+echo "tasks.db" >> .gitignore
+echo "__pycache__/" >> .gitignore
+echo ".env" >> .gitignore
