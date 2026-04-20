@@ -1,0 +1,36 @@
+### 1. Create a new task
+POST http://127.0.0.1:8000/tasks
+Content-Type: application/json
+
+{
+  "title": "Learn FastAPI",
+  "description": "Complete the task management API"
+}
+
+### 2. Update the task (use the ID from response above)
+PUT http://127.0.0.1:8000/tasks/one_task/1
+Content-Type: application/json
+
+{
+  "title": "Learn FastAPI - Completed!",
+  "description": "I have successfully learned FastAPI",
+  "completed": true
+}
+
+### 3. Get all tasks to see the update
+GET http://127.0.0.1:8000/tasks
+
+### 4. Get specific task
+GET http://127.0.0.1:8000/tasks/1
+
+### 5. Try to update non-existent task (should give 404)
+PUT http://127.0.0.1:8000/tasks/999
+Content-Type: application/json
+
+{
+  "title": "This should fail",
+  "description": "Task not found"
+}
+
+### 6. Delete task (if you have delete endpoint)
+DELETE http://127.0.0.1:8000/tasks/1
