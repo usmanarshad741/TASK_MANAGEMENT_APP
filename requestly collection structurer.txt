@@ -1,0 +1,11 @@
+TASK_APIs
+├── Auth
+│   ├── POST Register User
+│   ├── POST Login User
+│   └── GET Get My Info
+├── Tasks (Protected)
+│   ├── POST Create Task
+│   ├── GET Get All Tasks
+│   ├── GET Get One Task
+│   ├── PUT Update Task
+│   └── DELETE Delete Task

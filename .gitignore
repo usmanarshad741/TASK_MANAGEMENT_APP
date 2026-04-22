@@ -1,3 +1,6 @@
-echo "tasks.db" >> .gitignore
+echo "env/" >> .gitignore
 echo "__pycache__/" >> .gitignore
+echo "*.pyc" >> .gitignore
+echo "tasks.db" >> .gitignore
 echo ".env" >> .gitignore
+echo ".vscode/" >> .gitignore

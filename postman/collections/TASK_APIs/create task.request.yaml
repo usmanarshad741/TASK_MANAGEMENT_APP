@@ -1,0 +1,8 @@
+$kind: http-request
+name: create task
+url: http://127.0.0.1:8000/tasks/create
+method: POST
+body:
+  type: json
+  content: ""
+order: 1776681358040

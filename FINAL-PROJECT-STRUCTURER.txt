@@ -1,0 +1,15 @@
+TASK_MANAGEMENT_APP/
+├── main.py
+├── SRC/
+│   ├── TASK/
+│   │   ├── models.py      # Task, User models
+│   │   ├── dtos.py        # Pydantic schemas
+│   │   ├── controller.py  # Business logic
+│   │   ├── router.py      # Task routes
+│   │   └── auth_controller.py  # Auth routes
+│   └── utils/
+│       ├── db.py          # Database connection
+│       ├── settings.py    # Configuration
+│       └── auth.py        # JWT utilities
+├── tasks.db               # SQLite database
+└── requirements.txt       # Dependencies

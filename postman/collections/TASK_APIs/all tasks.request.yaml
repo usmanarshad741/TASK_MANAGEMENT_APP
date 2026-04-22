@@ -1,0 +1,8 @@
+$kind: http-request
+name: all tasks
+url: http://127.0.0.1:8000/tasks/alltasks
+method: GET
+body:
+  type: json
+  content: ""
+order: 925622152648417
