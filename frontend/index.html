@@ -17,19 +17,30 @@
                 <button class="tab-btn" onclick="showTab('register')">Register</button>
             </div>
             
+            <!-- Login Tab -->
             <div id="loginTab" class="tab-content active">
                 <h2>Welcome Back</h2>
                 <input type="text" id="loginUsername" placeholder="Username">
                 <input type="password" id="loginPassword" placeholder="Password">
                 <button class="btn-primary" onclick="login()">Login</button>
+                <a href="#" onclick="showForgotPassword()" style="display: block; text-align: center; margin-top: 10px; color: #667eea;">Forgot Password?</a>
             </div>
             
+            <!-- Register Tab -->
             <div id="registerTab" class="tab-content">
                 <h2>Create Account</h2>
                 <input type="text" id="regUsername" placeholder="Username">
                 <input type="email" id="regEmail" placeholder="Email">
                 <input type="password" id="regPassword" placeholder="Password">
                 <button class="btn-primary" onclick="register()">Register</button>
+            </div>
+            
+            <!-- Forgot Password Tab (NEW - Login aur Register ke BAAD) -->
+            <div id="forgotPasswordForm" class="tab-content" style="display: none;">
+                <h2>Reset Password</h2>
+                <input type="email" id="resetEmail" placeholder="Enter your email">
+                <button class="btn-primary" onclick="forgotPassword()">Send Reset Link</button>
+                <a href="#" onclick="showTab('login')" style="display: block; text-align: center; margin-top: 10px;">Back to Login</a>
             </div>
         </div>
 

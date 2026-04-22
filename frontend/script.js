@@ -13,16 +13,32 @@ if (authToken) {
 
 // Show/Hide Tabs
 function showTab(tab) {
+    // Hide all tabs
+    document.getElementById('loginTab').classList.remove('active');
+    document.getElementById('registerTab').classList.remove('active');
+    document.getElementById('forgotPasswordForm').classList.remove('active');
+    
+    // Update tab buttons
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
     
     if (tab === 'login') {
         document.querySelector('.tab-btn').classList.add('active');
         document.getElementById('loginTab').classList.add('active');
-    } else {
+    } else if (tab === 'register') {
         document.querySelectorAll('.tab-btn')[1].classList.add('active');
         document.getElementById('registerTab').classList.add('active');
     }
+}
+
+// Show Forgot Password Form
+function showForgotPassword() {
+    // Hide all tabs
+    document.getElementById('loginTab').classList.remove('active');
+    document.getElementById('registerTab').classList.remove('active');
+    document.getElementById('forgotPasswordForm').classList.remove('active');
+    
+    // Show forgot password form
+    document.getElementById('forgotPasswordForm').classList.add('active');
 }
 
 // Show message toast
@@ -91,6 +107,36 @@ async function login() {
     }
 }
 
+// Forgot Password
+async function forgotPassword() {
+    const email = document.getElementById('resetEmail').value;
+    
+    if (!email) {
+        showMessage('Please enter your email', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE}/auth/forgot-password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            showMessage('Reset link sent! Check console for token', 'success');
+            console.log('Reset token:', data.reset_token);
+            console.log('Reset link:', data.reset_link);
+        } else {
+            showMessage(data.detail || 'Failed to send reset link', 'error');
+        }
+    } catch (error) {
+        showMessage('Network error', 'error');
+    }
+}
+
 // Logout
 function logout() {
     localStorage.removeItem('token');
@@ -126,6 +172,9 @@ async function loadTasks() {
                 totalTasks = data.pagination.total;
                 updatePaginationUI(data.pagination);
             }
+        } else if (response.status === 401) {
+            tasksList.innerHTML = '<p>Session expired. Please login again.</p>';
+            logout();
         } else {
             tasksList.innerHTML = '<p>Failed to load tasks</p>';
         }
@@ -150,6 +199,10 @@ function displayTasks(tasks) {
                 <small style="color:#718096;">ID: ${task.id}</small>
             </div>
             <div class="task-description">${escapeHtml(task.description)}</div>
+            <div class="task-datetime" style="font-size: 11px; color: #a0aec0; margin-bottom: 8px;">
+                Created: ${formatDate(task.created_at)}
+                ${task.updated_at ? ` | Updated: ${formatDate(task.updated_at)}` : ''}
+            </div>
             <div class="task-actions">
                 <button class="complete-btn" onclick="toggleComplete(${task.id}, ${!task.completed})">
                     ${task.completed ? '↺ Mark Incomplete' : '✓ Mark Complete'}
@@ -159,6 +212,17 @@ function displayTasks(tasks) {
             </div>
         </div>
     `).join('');
+}
+
+// Format date for display
+function formatDate(dateString) {
+    if (!dateString) return 'N/A';
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleString();
+    } catch (e) {
+        return dateString;
+    }
 }
 
 // Update pagination UI
@@ -221,7 +285,8 @@ async function createTask() {
             currentSkip = 0;
             loadTasks();
         } else {
-            showMessage('Failed to create task', 'error');
+            const data = await response.json();
+            showMessage(data.detail || 'Failed to create task', 'error');
         }
     } catch (error) {
         showMessage('Network error', 'error');
@@ -309,7 +374,7 @@ async function editTask(taskId) {
     }
 }
 
-// Helper function
+// Helper function to escape HTML
 function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
