@@ -1,7 +1,7 @@
-echo fastapi > requirements.txt
-echo uvicorn >> requirements.txt
-echo sqlalchemy >> requirements.txt
-echo "python-jose[cryptography]" >> requirements.txt
-echo "passlib[bcrypt]" >> requirements.txt
-echo python-multipart >> requirements.txt
-echo pydantic-settings >> requirements.txt
+fastapi
+uvicorn
+sqlalchemy
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+pydantic-settings
