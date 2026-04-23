@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -9,6 +9,7 @@ from SRC.utils.settings import settings
 from SRC.TASK import models
 from SRC.TASK.dtos import TokenData
 from SRC.utils.db import get_db
+import secrets
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -17,15 +18,12 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 def verify_password(plain_password, hashed_password):
-    """Check if password matches hash"""
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password):
-    """Create hash from password"""
     return pwd_context.hash(password)
 
 def authenticate_user(db: Session, username: str, password: str):
-    """Verify username and password"""
     user = db.query(models.User).filter(models.User.username == username).first()
     if not user:
         return False
@@ -34,19 +32,16 @@ def authenticate_user(db: Session, username: str, password: str):
     return user
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
-    """Create JWT token"""
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
 
-# ✅ CORRECTED - No 'async' keyword
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    """Get current user from token"""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -65,3 +60,42 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     if user is None:
         raise credentials_exception
     return user
+
+def generate_reset_token() -> str:
+    """Generate a secure reset token"""
+    return secrets.token_urlsafe(32)
+
+def create_reset_token(db: Session, email: str) -> Optional[str]:
+    """Create reset token for user"""
+    user = db.query(models.User).filter(models.User.email == email).first()
+    if not user:
+        return None
+    
+    token = generate_reset_token()
+    user.reset_token = token
+    user.reset_token_expiry = datetime.now(timezone.utc) + timedelta(hours=1)
+    db.commit()
+    
+    return token
+
+def verify_reset_token(db: Session, token: str) -> Optional[models.User]:
+    """Verify reset token and return user"""
+    user = db.query(models.User).filter(
+        models.User.reset_token == token,
+        models.User.reset_token_expiry > datetime.now(timezone.utc)
+    ).first()
+    
+    return user
+
+def reset_password(db: Session, token: str, new_password: str) -> bool:
+    """Reset user password using token"""
+    user = verify_reset_token(db, token)
+    if not user:
+        return False
+    
+    user.hashed_password = get_password_hash(new_password)
+    user.reset_token = None
+    user.reset_token_expiry = None
+    db.commit()
+    
+    return True
