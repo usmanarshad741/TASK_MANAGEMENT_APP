@@ -1,5 +1,5 @@
 // API Configuration
-const API_BASE = 'http://127.0.0.1:8000';
+const API_BASE = 'https://taskmanagementapp-production-4510.up.railway.app';
 let authToken = localStorage.getItem('token');
 let currentSkip = 0;
 let currentLimit = 10;
