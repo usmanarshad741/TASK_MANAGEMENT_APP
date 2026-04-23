@@ -5,3 +5,8 @@ python-jose[cryptography]
 passlib[bcrypt]
 python-multipart
 pydantic-settings
+psycopg2-binary
+itsdangerous
+python-dotenv
+bcrypt==3.2.0
+passlib==1.7.4
